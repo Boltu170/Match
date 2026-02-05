@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firm Theory Quiz - Matching Questions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        padding: 40px;
+    }
+
+    h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 2em;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 1.1em;
+    }
+
+    .instructions {
+        background: #f0f4ff;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        border-left: 4px solid #667eea;
+    }
+
+    .instructions h3 {
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+
+    .question-block {
+        margin-bottom: 40px;
+        padding: 25px;
+        background: #fafafa;
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+        position: relative;
+    }
+
+    .question-block.locked {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .question-block.locked::after {
+        content: '🔒 Complete previous question to unlock';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(102, 126, 234, 0.95);
+        color: white;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 1.1em;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .question-block.completed {
+        border-color: #4caf50;
+        background: #f1f8f4;
+    }
+
+    .question-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .completion-badge {
+        display: none;
+        float: right;
+        background: #4caf50;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9em;
+    }
+
+    .question-block.completed .completion-badge {
+        display: inline-block;
+    }
+
+    .matching-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 15px;
+    }
+
+    .left-column, .right-column {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .left-item {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        border: 2px solid #ddd;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .left-item strong {
+        color: #667eea;
+        min-width: 30px;
+    }
+
+    .right-item {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        border: 2px solid #ddd;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .right-item strong {
+        color: #764ba2;
+        min-width: 30px;
+    }
+
+    select {
+        padding: 8px 12px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        background: white;
+        cursor: pointer;
+        transition: border-color 0.3s;
+        min-width: 60px;
+    }
+
+    select:hover {
+        border-color: #667eea;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    select.filled {
+        border-color: #4caf50;
+        background: #f1f8f4;
+    }
+
+    .submit-btn {
+        display: block;
+        width: 100%;
+        max-width: 300px;
+        margin: 40px auto;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.2em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-btn:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .results {
+        display: none;
+        margin-top: 40px;
+        padding: 30px;
+        background: #f0f4ff;
+        border-radius: 10px;
+        border: 2px solid #667eea;
+    }
+
+    .results.show {
+        display: block;
+    }
+
+    .score {
+        text-align: center;
+        font-size: 2em;
+        color: #667eea;
+        margin-bottom: 30px;
+        font-weight: bold;
+    }
+
+    .answer-explanation {
+        margin-bottom: 25px;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        border-left: 4px solid #ddd;
+    }
+
+    .answer-explanation.correct {
+        border-left-color: #4caf50;
+    }
+
+    .answer-explanation.incorrect {
+        border-left-color: #f44336;
+    }
+
+    .answer-explanation h4 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .answer-details {
+        margin-top: 10px;
+        padding: 10px;
+        background: #fafafa;
+        border-radius: 5px;
+    }
+
+    .correct-answer {
+        color: #4caf50;
+        font-weight: bold;
+    }
+
+    .incorrect-answer {
+        color: #f44336;
+        font-weight: bold;
+    }
+
+    .explanation-text {
+        margin-top: 10px;
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 30px;
+        background: #e0e0e0;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        width: 0%;
+        transition: width 0.5s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+        }
+
+        .matching-container {
+            grid-template-columns: 1fr;
+        }
+
+        h1 {
+            font-size: 1.5em;
+        }
+
+        .question-block.locked::after {
+            font-size: 0.9em;
+            padding: 10px 20px;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Firm Theory Quiz</h1>
+        <p class="subtitle">Resource-Based and Institutionalist Theories</p>
+
+```
+    <div class="instructions">
+        <h3>Instructions:</h3>
+        <p>Match each item in the left column with the correct answer in the right column by selecting the appropriate letter from the dropdown menu. <strong>You must complete each question before proceeding to the next one.</strong> Once you've completed all 10 questions, click "Submit Answers" to see your results and explanations.</p>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressBar">0/10 Complete</div>
+    </div>
+
+    <form id="quizForm">
+        <!-- Question 1 -->
+        <div class="question-block" id="q1-block" data-question="1">
+            <div class="question-title">
+                Question 1: Match the concept with its definition
+                <span class="completion-badge">✓ Complete</span>
+            </div>
+            <div class="matching-container">
+                <div class="left-column">
+                    <div class="left-item">
+                        <select name="q1_1" required data-question="1">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                        </select>
+                        <span><strong>1.</strong> Transaction costs</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q1_2" required data-question="1">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                        </select>
+                        <span><strong>2.</strong> U-form organization</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q1_3" required data-question="1">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                        </select>
+                        <span><strong>3.</strong> M-form organization</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q1_4" required data-question="1">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                        </select>
+                        <span><strong>4.</strong> Organic growth</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q1_5" required data-question="1">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                        </select>
+                        <span><strong>5.</strong> Unused resources</span>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="right-item"><strong>A.</strong> Semi-autonomous divisions based on geography or products</div>
+                    <div class="right-item"><strong>B.</strong> Capacity within a firm not being fully utilized</div>
+                    <div class="right-item"><strong>C.</strong> Costs of using markets (finding prices, contracts, monitoring)</div>
+                    <div class="right-item"><strong>D.</strong> Firm structure divided by operational functions</div>
+                    <div class="right-item"><strong>E.</strong> Growth through developing own operations vs M&A</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="question-block locked" id="q2-block" data-question="2">
+            <div class="question-title">
+                Question 2: Match the theorist with their key contribution
+                <span class="completion-badge">✓ Complete</span>
+            </div>
+            <div class="matching-container">
+                <div class="left-column">
+                    <div class="left-item">
+                        <select name="q2_1" required data-question="2">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>1.</strong> Edith Penrose</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q2_2" required data-question="2">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>2.</strong> John Kenneth Galbraith</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q2_3" required data-question="2">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>3.</strong> Blinder et al. (1998)</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q2_4" required data-question="2">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>4.</strong> Transaction costs theorists</span>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="right-item"><strong>A.</strong> Firms grow until planning costs equal transaction costs</div>
+                    <div class="right-item"><strong>B.</strong> Resource-based theory: firms have perpetual growth drivers</div>
+                    <div class="right-item"><strong>C.</strong> Found only 11% of US firms had rising marginal costs</div>
+                    <div class="right-item"><strong>D.</strong> Modern decisions require group knowledge, not individuals</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="question-block locked" id="q3-block" data-question="3">
+            <div class="question-title">
+                Question 3: Match the problem with its solution
+                <span class="completion-badge">✓ Complete</span>
+            </div>
+            <div class="matching-container">
+                <div class="left-column">
+                    <div class="left-item">
+                        <select name="q3_1" required data-question="3">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>1.</strong> Managers can't oversee everything in large firms</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q3_2" required data-question="3">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>2.</strong> Operations spread across multiple regions</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q3_3" required data-question="3">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>3.</strong> Decisions need more knowledge than one person has</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q3_4" required data-question="3">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>4.</strong> Limited rate of organic growth</span>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="right-item"><strong>A.</strong> Organize decision-making in groups</div>
+                    <div class="right-item"><strong>B.</strong> Create managerial hierarchies with delegated control</div>
+                    <div class="right-item"><strong>C.</strong> Engage in mergers & acquisitions</div>
+                    <div class="right-item"><strong>D.</strong> Switch from U-form to M-form structure</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="question-block locked" id="q4-block" data-question="4">
+            <div class="question-title">
+                Question 4: Match the percentage with what it represents from Blinder et al. study
+                <span class="completion-badge">✓ Complete</span>
+            </div>
+            <div class="matching-container">
+                <div class="left-column">
+                    <div class="left-item">
+                        <select name="q4_1" required data-question="4">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                        <span><strong>1.</strong> 11%</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q4_2" required data-question="4">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                        <span><strong>2.</strong> 70%</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q4_3" required data-question="4">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                        <span><strong>3.</strong> 89%</span>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="right-item"><strong>A.</strong> Firms with constant or decreasing marginal costs</div>
+                    <div class="right-item"><strong>B.</strong> Firms with rising marginal costs</div>
+                    <div class="right-item"><strong>C.</strong> Share of US economy represented in the sample</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="question-block locked" id="q5-block" data-question="5">
+            <div class="question-title">
+                Question 5: Match the constraint type with specific examples
+                <span class="completion-badge">✓ Complete</span>
+            </div>
+            <div class="matching-container">
+                <div class="left-column">
+                    <div class="left-item">
+                        <select name="q5_1" required data-question="5">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>1.</strong> Rising marginal costs</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q5_2" required data-question="5">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>2.</strong> Limited input markets</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q5_3" required data-question="5">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>3.</strong> Limited access to finance</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q5_4" required data-question="5">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>4.</strong> Managerial difficulties</span>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="right-item"><strong>A.</strong> Not a hard constraint (overcome via hierarchies and M-form)</div>
+                    <div class="right-item"><strong>B.</strong> Not a hard constraint (only 11% of firms experience this)</div>
+                    <div class="right-item"><strong>C.</strong> Not a hard constraint (larger firms access cheaper finance)</div>
+                    <div class="right-item"><strong>D.</strong> Not a hard constraint (e.g., microchip shortage was temporary)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 6 -->
+        <div class="question-block locked" id="q6-block" data-question="6">
+            <div class="question-title">
+                Question 6: Match the term with its characteristic in Penrose's theory
+                <span class="completion-badge">✓ Complete</span>
+            </div>
+            <div class="matching-container">
+                <div class="left-column">
+                    <div class="left-item">
+                        <select name="q6_1" required data-question="6">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>1.</strong> Resources</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q6_2" required data-question="6">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>2.</strong> Growth opportunities</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q6_3" required data-question="6">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>3.</strong> Rate of growth</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q6_4" required data-question="6">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>4.</strong> Entrepreneurial drive</span>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="right-item"><strong>A.</strong> What drives firms to seek ways to utilize unused resources</div>
+                    <div class="right-item"><strong>B.</strong> May be limited by managerial capacity</div>
+                    <div class="right-item"><strong>C.</strong> Never fully utilized; using them creates new ones</div>
+                    <div class="right-item"><strong>D.</strong> Perpetual and never exhausted</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 7 -->
+        <div class="question-block locked" id="q7-block" data-question="7">
+            <div class="question-title">
+                Question 7: Match the organizational feature with its primary function
+                <span class="completion-badge">✓ Complete</span>
+            </div>
+            <div class="matching-container">
+                <div class="left-column">
+                    <div class="left-item">
+                        <select name="q7_1" required data-question="7">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>1.</strong> Central management in M-form</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q7_2" required data-question="7">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>2.</strong> Semi-autonomous divisions in M-form</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q7_3" required data-question="7">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>3.</strong> Managerial hierarchies</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q7_4" required data-question="7">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>4.</strong> Technology (telegraph, email, sensors)</span>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="right-item"><strong>A.</strong> Enable clear information flows up and down</div>
+                    <div class="right-item"><strong>B.</strong> Makes managing large organizations easier</div>
+                    <div class="right-item"><strong>C.</strong> Sets overall strategy and scrutinizes division results</div>
+                    <div class="right-item"><strong>D.</strong> Run their own operations fairly independently</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 8 -->
+        <div class="question-block locked" id="q8-block" data-question="8">
+            <div class="question-title">
+                Question 8: Match the theory's assumption with its real-world validity
+                <span class="completion-badge">✓ Complete</span>
+            </div>
+            <div class="matching-container">
+                <div class="left-column">
+                    <div class="left-item">
+                        <select name="q8_1" required data-question="8">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                        <span><strong>1.</strong> Short run vs long run distinction</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q8_2" required data-question="8">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                        <span><strong>2.</strong> Rising marginal costs are common</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q8_3" required data-question="8">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                        <span><strong>3.</strong> Planning costs increase insurmountably</span>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="right-item"><strong>A.</strong> Overstated; can be overcome with organizational innovations</div>
+                    <div class="right-item"><strong>B.</strong> Not clear-cut in reality; firms constantly vary all factors</div>
+                    <div class="right-item"><strong>C.</strong> False; only 11% of firms have this</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 9 -->
+        <div class="question-block locked" id="q9-block" data-question="9">
+            <div class="question-title">
+                Question 9: Match the example with the concept it illustrates
+                <span class="completion-badge">✓ Complete</span>
+            </div>
+            <div class="matching-container">
+                <div class="left-column">
+                    <div class="left-item">
+                        <select name="q9_1" required data-question="9">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>1.</strong> Wood chippings sold to plywood factory</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q9_2" required data-question="9">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>2.</strong> Machine at 70% capacity with 30% spare</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q9_3" required data-question="9">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>3.</strong> Opening shop in new location creates new markets</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q9_4" required data-question="9">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>4.</strong> Early 2020s microchip shortage</span>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="right-item"><strong>A.</strong> Utilizing resources creates new unused resources</div>
+                    <div class="right-item"><strong>B.</strong> Temporary input market constraint (not hard limit)</div>
+                    <div class="right-item"><strong>C.</strong> Converting waste into a resource</div>
+                    <div class="right-item"><strong>D.</strong> Unused resources provide growth opportunities</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 10 -->
+        <div class="question-block locked" id="q10-block" data-question="10">
+            <div class="question-title">
+                Question 10: Match the advantage with firm size
+                <span class="completion-badge">✓ Complete</span>
+            </div>
+            <div class="matching-container">
+                <div class="left-column">
+                    <div class="left-item">
+                        <select name="q10_1" required data-question="10">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>1.</strong> Access to sophisticated technology</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q10_2" required data-question="10">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>2.</strong> Ability to self-finance growth</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q10_3" required data-question="10">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>3.</strong> Risk management capability</span>
+                    </div>
+                    <div class="left-item">
+                        <select name="q10_4" required data-question="10">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <span><strong>4.</strong> Management quality</span>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="right-item"><strong>A.</strong> Larger firms can afford expensive management tools</div>
+                    <div class="right-item"><strong>B.</strong> Larger firms have greater revenue streams</div>
+                    <div class="right-item"><strong>C.</strong> Larger firms can diversify and have more reserves</div>
+                    <div class="right-item"><strong>D.</strong> Larger firms score higher on ONS management surveys</div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn" disabled>Submit Answers</button>
+    </form>
+
+    <div id="results" class="results"></div>
+</div>
+
+<script>
+    const correctAnswers = {
+        q1: {
+            1: 'C', 2: 'D', 3: 'A', 4: 'E', 5: 'B',
+            explanations: {
+                1: "Transaction costs are the costs associated with using markets, including finding out relevant prices, signing contracts, and monitoring them.",
+                2: "U-form (unitary form) divides operations by function: production, sales, logistics, marketing, etc.",
+                3: "M-form (multidivisional form) creates semi-autonomous divisions typically organized by geographical area or product types.",
+                4: "Organic growth refers to a firm growing by developing its own existing operations or setting up new ones, as opposed to mergers & acquisitions.",
+                5: "Unused resources are capacities within a firm not being fully utilized, such as spare machine capacity or underutilized worker skills."
+            }
+        },
+        q2: {
+            1: 'B', 2: 'D', 3: 'C', 4: 'A',
+            explanations: {
+                1: "Edith Penrose developed the resource-based theory, arguing that firms are bundles of resources and have perpetual internal drivers of growth.",
+                2: "John Kenneth Galbraith argued that modern production requires knowledge possessed by groups rather than individuals, necessitating group decision-making.",
+                3: "Blinder et al.'s 1998 study 'Asking About Prices' surveyed US firms and found only 11% had rising marginal costs, challenging neoclassical assumptions.",
+                4: "Transaction costs theorists argue firms grow to avoid market transaction costs but stop when internal planning costs equal transaction costs."
+            }
+        },
+        q3: {
+            1: 'B', 2: 'D', 3: 'A', 4: 'C',
+            explanations: {
+                1: "The solution is creating managerial hierarchies with separation of ownership and control, delegating responsibilities to hired managers.",
+                2: "When operations spread geographically, firms switched from U-form to M-form structure, which better handles geographical diversity.",
+                3: "Since modern decisions require more specialized knowledge than one person can possess, decision-making is organized in groups.",
+                4: "While managerial capacity limits organic growth rate, firms can overcome this through mergers & acquisitions of established businesses."
+            }
+        },
+        q4: {
+            1: 'B', 2: 'C', 3: 'A',
+            explanations: {
+                1: "Only 11% of surveyed firms had marginal cost curves fitting the neoclassical assumption of rising marginal costs.",
+                2: "The sample was representative of around 70% of the US economy, making the findings highly significant.",
+                3: "89% of firms had either decreasing or constant marginal costs (with or without capacity jumps), contradicting standard theory."
+            }
+        },
+        q5: {
+            1: 'B', 2: 'D', 3: 'C', 4: 'A',
+            explanations: {
+                1: "Rising marginal costs are not a hard constraint - empirical evidence shows only 11% of firms actually experience this.",
+                2: "Limited input markets (like microchip shortages) are temporary disruptions, not permanent constraints. Firms adapt and bottlenecks are eventually overcome.",
+                3: "Limited finance is not a hard constraint. Some firms can always obtain finance, and larger firms have better access to cheaper finance.",
+                4: "Managerial difficulties can be overcome through organizational innovations like hierarchies, M-form structure, and technology."
+            }
+        },
+        q6: {
+            1: 'C', 2: 'D', 3: 'B', 4: 'A',
+            explanations: {
+                1: "Resources (broadly defined: cash, equipment, processes, skills, reputation) are virtually never fully utilized, and using them creates new unused resources.",
+                2: "Growth opportunities are perpetual - every time resources are utilized, new opportunities emerge. They never have to be exhausted.",
+                3: "The rate of growth may be limited by managers' capacity to manage change, though this can be partially overcome through M&As.",
+                4: "Entrepreneurial drive is what motivates people within firms to seek ways to utilize unused resources and thereby grow the firm."
+            }
+        },
+        q7: {
+            1: 'C', 2: 'D', 3: 'A', 4: 'B',
+            explanations: {
+                1: "In M-form, central management sets overall strategy, scrutinizes divisions based on financial indicators, and makes decisions about entering new markets or reorganizing.",
+                2: "Semi-autonomous divisions in M-form run their own production, logistics, marketing, and sales operations fairly independently.",
+                3: "Managerial hierarchies create different levels of management, enabling clear information flows both upward (about opportunities/problems) and downward (instructions/direction).",
+                4: "Technologies like telegraph, telephone, email, sensors, and computerization make transmitting information and managing operations easier, especially for large firms."
+            }
+        },
+        q8: {
+            1: 'B', 2: 'C', 3: 'A',
+            explanations: {
+                1: "In reality, there's no clear separation between short and long run. Firms can decide to vary any factor of production at any time, though some take longer to change.",
+                2: "The Blinder et al. study found that rising marginal costs are actually an exception (11%), not the norm as neoclassical theory assumes.",
+                3: "While planning costs do increase with firm size, people have developed ways to overcome this (hierarchies, M-form, technology), so it's not an insurmountable barrier."
+            }
+        },
+        q9: {
+            1: 'C', 2: 'D', 3: 'A', 4: 'B',
+            explanations: {
+                1: "Wood chippings were waste until someone found a way to sell them to plywood factories, effectively converting waste into a resource (cash).",
+                2: "A machine at 70% capacity has 30% spare capacity - this unused resource provides an opportunity for growth by increasing production.",
+                3: "When a firm opens a shop in a new location, it creates new resources (familiarity with location, new workers, new markets) that themselves won't be fully utilized.",
+                4: "The early 2020s microchip shortage hit various industries hard, but it was temporary. The reading notes that disruptions don't last forever and bottlenecks get overcome."
+            }
+        },
+        q10: {
+            1: 'A', 2: 'B', 3: 'C', 4: 'D',
+            explanations: {
+                1: "Larger firms can afford sophisticated technologies that make managing firms easier, because such technologies require substantial resources and knowledge.",
+                2: "The larger a firm is, the bigger its revenue, giving it greater ability to self-finance its growth from internal funds.",
+                3: "Large firms can handle risk better - they can diversify (not put all eggs in one basket) and have more reserves to weather problems.",
+                4: "The Office for National Statistics surveys show large UK firms consistently score higher on management practices than smaller firms."
+            }
+        }
+    };
+
+    let completedQuestions = 0;
+
+    // Check if a question is complete (all filled)
+    function isQuestionComplete(questionNum) {
+        const selects = document.querySelectorAll(`select[data-question="${questionNum}"]`);
+        return Array.from(selects).every(select => select.value !== '');
+    }
+
+    // Check if all answers in a question are CORRECT
+    function isQuestionCorrect(questionNum) {
+        const qKey = 'q' + questionNum;
+        const questionAnswers = correctAnswers[qKey];
+        const selects = document.querySelectorAll(`select[data-question="${questionNum}"]`);
+        
+        let allCorrect = true;
+        selects.forEach(select => {
+            const name = select.getAttribute('name');
+            const subQ = name.split('_')[1];
+            const correctAnswer = questionAnswers[subQ];
+            if (select.value !== correctAnswer) {
+                allCorrect = false;
+            }
+        });
+        
+        return allCorrect;
+    }
+
+    // Update progress bar
+    function updateProgress() {
+        const progressBar = document.getElementById('progressBar');
+        const percentage = (completedQuestions / 10) * 100;
+        progressBar.style.width = percentage + '%';
+        progressBar.textContent = `${completedQuestions}/10 Complete`;
+    }
+
+    // Unlock next question
+    function unlockNextQuestion(currentQuestionNum) {
+        const nextQuestionNum = currentQuestionNum + 1;
+        if (nextQuestionNum <= 10) {
+            const nextBlock = document.getElementById(`q${nextQuestionNum}-block`);
+            if (nextBlock) {
+                nextBlock.classList.remove('locked');
+                // Scroll to next question smoothly
+                setTimeout(() => {
+                    nextBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }
+        }
+    }
+
+    // Mark question as completed
+    function markQuestionComplete(questionNum) {
+        const block = document.getElementById(`q${questionNum}-block`);
+        if (block && !block.classList.contains('completed')) {
+            block.classList.add('completed');
+            completedQuestions++;
+            updateProgress();
+            unlockNextQuestion(questionNum);
+            
+            // Enable submit button if all questions complete
+            if (completedQuestions === 10) {
+                document.getElementById('submitBtn').disabled = false;
+            }
+        }
+    }
+
+    // Add event listeners to all selects
+    document.querySelectorAll('select').forEach(select => {
+        select.addEventListener('change', function() {
+            const questionNum = parseInt(this.getAttribute('data-question'));
+            
+            // Add filled class to this select
+            if (this.value !== '') {
+                this.classList.add('filled');
+            } else {
+                this.classList.remove('filled');
+            }
+            
+            // Check if question is complete AND correct
+            if (isQuestionComplete(questionNum) && isQuestionCorrect(questionNum)) {
+                markQuestionComplete(questionNum);
+            }
+        });
+    });
+
+    // Handle form submission
+    document.getElementById('quizForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        let totalQuestions = 0;
+        let correctCount = 0;
+        let resultsHTML = '';
+
+        // Process each question
+        for (let questionNum = 1; questionNum <= 10; questionNum++) {
+            const qKey = 'q' + questionNum;
+            const questionAnswers = correctAnswers[qKey];
+            
+            resultsHTML += `<div style="margin-bottom: 30px;"><h3 style="color: #667eea; margin-bottom: 15px;">Question ${questionNum}</h3>`;
+
+            // Get all sub-questions for this question
+            const subQuestions = Object.keys(questionAnswers).filter(k => !isNaN(k));
+            
+            for (let subQ of subQuestions) {
+                totalQuestions++;
+                const fieldName = `${qKey}_${subQ}`;
+                const userAnswer = formData.get(fieldName);
+                const correctAnswer = questionAnswers[subQ];
+                const isCorrect = userAnswer === correctAnswer;
+                
+                if (isCorrect) correctCount++;
+
+                resultsHTML += `
+                    <div class="answer-explanation ${isCorrect ? 'correct' : 'incorrect'}">
+                        <h4>Match ${subQ}: ${isCorrect ? '✓ Correct' : '✗ Incorrect'}</h4>
+                        <div class="answer-details">
+                            <div><strong>Your answer:</strong> <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">${userAnswer || 'Not answered'}</span></div>
+                            ${!isCorrect ? `<div><strong>Correct answer:</strong> <span class="correct-answer">${correctAnswer}</span></div>` : ''}
+                        </div>
+                        <div class="explanation-text">
+                            <strong>Explanation:</strong> ${questionAnswers.explanations[subQ]}
+                        </div>
+                    </div>
+                `;
+            }
+
+            resultsHTML += '</div>';
+        }
+
+        const percentage = Math.round((correctCount / totalQuestions) * 100);
+        const resultsDiv = document.getElementById('results');
+        
+        resultsDiv.innerHTML = `
+            <div class="score">
+                Your Score: ${correctCount}/${totalQuestions} (${percentage}%)
+            </div>
+            ${resultsHTML}
+        `;
+        
+        resultsDiv.classList.add('show');
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+</script>
+```
+
+</body>
+</html>
